@@ -10,6 +10,9 @@
 **/*.tfstate.*
 crash.log
 crash.*.log
+terraform-plan.txt
+terraform-apply.txt
+tfplan
 
 # Ansible
 *.retry
