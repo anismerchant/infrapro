@@ -50,3 +50,28 @@ resource "aws_route_table_association" "public_assoc" {
   subnet_id      = aws_subnet.public.id
   route_table_id = aws_route_table.public.id
 }
+
+resource "aws_security_group" "ssh" {
+  name        = "infrapro-ssh-sg"
+  description = "Allow SSH access"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    description = "SSH from anywhere (to be restricted)"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "infrapro-ssh-sg"
+  }
+}
