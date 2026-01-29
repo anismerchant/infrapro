@@ -9,7 +9,7 @@ The design follows industry-standard separation of concerns:
 - Ansible handles server configuration
 - (Optional) Jenkins orchestrates execution in CI
 
-## High-level system flow 
+## High-level system flow
 
 ```
 Data / control flow
@@ -94,6 +94,7 @@ Terraform state
 ```
 
 In production-style setups, remote state is typically stored in:
+
 - Amazon S3 (state storage)
 - DynamoDB (state locking)
 
@@ -118,12 +119,29 @@ EC2 VM
 
 This project supports two execution contexts:
 
-1) **Local execution**
+1. **Local execution**
    - Terraform and Ansible run from a developer machine
    - Used for learning, validation, and iteration
 
-2) **CI execution (optional)**
+2. **CI execution (optional)**
    - Jenkins runs the same Terraform and Ansible commands
    - Adds validation, approvals, and repeatability
 
 Both environments follow the same architecture and execution order.
+
+## Cloud provider boundary
+
+Terraform interacts with AWS through the AWS provider, which acts as the boundary
+between declarative infrastructure code and the AWS APIs.
+
+- Authentication is handled via the standard AWS credential chain
+- Region selection is parameterized
+- No credentials are hardcoded in configuration files
+
+```
+Terraform
+|
+| AWS provider
+v
+AWS API
+```
