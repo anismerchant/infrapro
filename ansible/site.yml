@@ -1,0 +1,14 @@
+---
+- name: Configure sandbox EC2
+  hosts: web
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Ensure standard packages are installed
+      yum:
+        name:
+          - git
+          - curl
+          - vim
+        state: present

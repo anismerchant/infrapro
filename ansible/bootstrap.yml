@@ -1,0 +1,10 @@
+---
+- name: Bootstrap sandbox EC2
+  hosts: web
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Install Python and base tooling
+      raw: |
+        yum install -y python3 python3-dnf
