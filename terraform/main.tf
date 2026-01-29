@@ -81,8 +81,23 @@ resource "aws_key_pair" "ssh" {
   public_key = file("~/.ssh/infrapro-key.pub")
 }
 
+data "aws_ami" "amazon_linux_2" {
+  most_recent = true
+  owners      = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+}
+
 resource "aws_instance" "sandbox" {
-  ami                    = "ami-0c02fb55956c7d316" # Amazon Linux 2 (us-east-1)
+  ami                    = data.aws_ami.amazon_linux_2.id
   instance_type          = "t3.micro"
   subnet_id              = aws_subnet.public.id
   vpc_security_group_ids = [aws_security_group.ssh.id]
@@ -92,3 +107,4 @@ resource "aws_instance" "sandbox" {
     Name = "infrapro-sandbox"
   }
 }
+
