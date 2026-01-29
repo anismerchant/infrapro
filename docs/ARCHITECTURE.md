@@ -188,3 +188,24 @@ Public Subnet
 ```
 
 This explicit routing model avoids hidden defaults and makes network behavior predictable and auditable.
+
+## Security group model
+
+Network access to compute resources is controlled using AWS Security Groups.
+
+- Security Groups act as stateful, instance-level firewalls
+- Inbound traffic is explicitly allowed on required ports only
+- Outbound traffic is allowed by default
+
+```
+Internet
+|
+| TCP 22 (SSH)
+v
+Security Group
+|
+v
+EC2 Instance
+```
+
+SSH access is required for Ansible-based configuration and should be restricted to trusted IP ranges in production environments.
