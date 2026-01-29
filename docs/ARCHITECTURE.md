@@ -236,3 +236,29 @@ Private key                       Public key
 SSH authentication works by proving possession of a private key through cryptographic challenge–response signing, which the server verifies using the corresponding public key.
 
 This model proves possession of a private key without transmitting secrets and is standard across secure Linux systems.
+
+## Ansible execution model
+
+Configuration is applied in two explicit phases.
+
+1. **Bootstrap phase**
+   - Runs once per host
+   - Uses raw SSH commands
+   - Installs Python and enables Ansible management
+
+2. **Configuration phase**
+   - Runs repeatedly
+   - Uses standard Ansible modules
+   - Is fully idempotent
+
+```
+Control Node
+|
+| bootstrap.yml (raw, once)
+|
+| site.yml (modules, repeatable)
+v
+EC2 Instance
+```
+
+This separation ensures predictable first-time setup and safe reconfiguration.
