@@ -209,3 +209,30 @@ EC2 Instance
 ```
 
 SSH access is required for Ansible-based configuration and should be restricted to trusted IP ranges in production environments.
+
+## SSH authentication model
+
+Access to EC2 instances uses SSH public-key authentication.
+
+- Terraform registers the public SSH key with AWS
+- The public key is injected into the EC2 instance at boot
+- Authentication is performed using cryptographic challenge–response
+- The private key never leaves the local machine
+
+```
+Local machine                     EC2
+
+---
+
+Private key                       Public key
+|                                  |
+| sign(challenge)                  |
+|--------------------------------->|
+|                                  | verify(signature)
+|                                  |
+✔ authenticated
+```
+
+SSH authentication works by proving possession of a private key through cryptographic challenge–response signing, which the server verifies using the corresponding public key.
+
+This model proves possession of a private key without transmitting secrets and is standard across secure Linux systems.
