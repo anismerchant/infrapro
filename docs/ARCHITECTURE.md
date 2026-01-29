@@ -164,3 +164,27 @@ AWS
 ```
 
 Network access is restricted and explicitly defined rather than relying on the default AWS VPC.
+
+## Internet access and routing
+
+Public internet access is explicitly enabled through an Internet Gateway and
+route table association.
+
+- An Internet Gateway provides connectivity between the VPC and the internet
+- A route table forwards all outbound traffic (0.0.0.0/0) to the gateway
+- The public subnet is explicitly associated with this route table
+
+```
+Internet
+|
+v
+Internet Gateway
+|
+v
+Route Table (0.0.0.0/0)
+|
+v
+Public Subnet
+```
+
+This explicit routing model avoids hidden defaults and makes network behavior predictable and auditable.
