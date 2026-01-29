@@ -261,4 +261,27 @@ v
 EC2 Instance
 ```
 
-This separation ensures predictable first-time setup and safe reconfiguration.
+## Ansible raw module usage
+
+During initial host setup, Ansible uses the `raw` module to execute commands
+directly over SSH without relying on Python or Ansible modules.
+
+- `raw` is used only during bootstrap
+- It does not require a Python runtime on the host
+- It enables installation of Python so standard modules can be used later
+
+```
+
+Control Node
+|
+| raw (no Python required)
+v
+Remote EC2 shell
+|
+| installs Python
+v
+Ansible-managed host
+
+```
+
+After bootstrap, all configuration is performed using standard, idempotent Ansible modules.
