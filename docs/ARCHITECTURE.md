@@ -1,7 +1,6 @@
 # Architecture
 
-This project provisions and configures a sandbox virtual machine on AWS using
-Terraform and Ansible.
+This project provisions and configures a sandbox virtual machine on AWS using Terraform and Ansible.
 
 The design follows industry-standard separation of concerns:
 
@@ -145,3 +144,23 @@ Terraform
 v
 AWS API
 ```
+
+## Network architecture
+
+All compute resources are deployed inside a dedicated Virtual Private Cloud (VPC).
+
+- The VPC defines the private network boundary
+- Subnets define IP ranges within the VPC
+- A public subnet is used to allow controlled SSH access
+
+```
+AWS
+|
+| VPC (10.0.0.0/16)
+|   |
+|   | Public Subnet (10.0.1.0/24)
+|   v
+|  EC2 Instance
+```
+
+Network access is restricted and explicitly defined rather than relying on the default AWS VPC.
