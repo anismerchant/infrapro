@@ -16,3 +16,4 @@ tfplan
 
 # Ansible
 *.retry
+ansible-site-run*.txt

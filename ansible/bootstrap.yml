@@ -1,10 +1,28 @@
 ---
 - name: Bootstrap sandbox EC2
   hosts: web
-  become: true
-  gather_facts: false
+  gather_facts: false  # Must be false because Python 3.8 isn't ready yet
 
   tasks:
-    - name: Install Python and base tooling
+    - name: Bootstrap host (Python 3.8 + clean SSH output)
       raw: |
-        yum install -y python3 python3-dnf
+        set -e
+
+        # 1. Install Python 3.8 (Required for modern Ansible-Core)
+        # We use || true because amazon-linux-extras may exit 1 if already enabled
+        sudo amazon-linux-extras install python3.8 -y || true
+
+        # 2. Silence login banners that break Ansible JSON parsing
+        # Create hushlogin for both the login user and root
+        touch ~/.hushlogin
+        sudo touch /root/.hushlogin
+        
+        # Remove the dynamic Amazon Linux system banner
+        sudo rm -f /usr/lib/motd.d/30-banner
+
+        # 3. Disable MOTD and LastLog in the SSH Daemon config
+        sudo sed -i 's/^#\?PrintMotd.*/PrintMotd no/' /etc/ssh/sshd_config
+        sudo sed -i 's/^#\?PrintLastLog.*/PrintLastLog no/' /etc/ssh/sshd_config
+
+        # 4. Restart SSH to apply the silencing rules
+        sudo systemctl restart sshd

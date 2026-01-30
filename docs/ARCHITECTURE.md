@@ -285,3 +285,86 @@ Ansible-managed host
 ```
 
 After bootstrap, all configuration is performed using standard, idempotent Ansible modules.
+
+# Ansible Architecture
+
+This repository follows a **two-phase Ansible execution model** to ensure reliability on Amazon Linux 2 and similar minimal cloud images.
+
+## Phase 1 — Bootstrap (Host Preparation)
+
+**Purpose:**
+Prepare a fresh EC2 instance so Ansible can safely run Python-based modules.
+
+**Characteristics:**
+
+- Uses `raw` tasks only
+- `gather_facts: false`
+- No reliance on an existing Python interpreter
+
+**Responsibilities:**
+
+- Install a Python version compatible with modern Ansible
+- Silence SSH login banners (MOTD, last-login output)
+- Ensure clean JSON transport over SSH
+
+**Entry point:**
+
+```bash
+ansible-playbook -i inventory.ini bootstrap.yml
+```
+
+This phase is **run once per host**.
+
+## Phase 2 — Site Configuration (Idempotent State)
+
+**Purpose:**
+Apply repeatable, declarative configuration using standard Ansible modules.
+
+**Characteristics:**
+
+- Uses roles and idempotent tasks
+- Relies on Python and clean SSH output
+- Safe to re-run at any time
+
+**Responsibilities:**
+
+- Package installation
+- System configuration
+- Service management
+- Security hardening
+
+**Entry point:**
+
+```bash
+ansible-playbook -i inventory.ini site.yml
+```
+
+## Why This Split Exists
+
+Amazon Linux 2 ships with:
+
+- Python versions incompatible with modern Ansible
+- Default SSH banners that corrupt module JSON output
+
+Separating **bootstrap** from **configuration** avoids fragile conditionals and ensures:
+
+- Predictable execution
+- Clean failure modes
+- Production-grade automation patterns
+
+## High-Level Flow
+
+```
+EC2 Instance (fresh)
+        |
+        v
+bootstrap.yml   (raw, no Python)
+        |
+        v
+Python 3.8 + Clean SSH
+        |
+        v
+site.yml        (roles, idempotent)
+```
+
+This architecture mirrors how Ansible is used in **real production environments**: _fix the host first, then manage it declaratively._

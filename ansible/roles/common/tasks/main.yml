@@ -1,0 +1,22 @@
+---
+- name: Install standard system packages
+  yum:
+    name:
+      - git
+      - curl
+      - vim
+    state: present
+
+- name: Disable PrintMotd in sshd_config
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?PrintMotd'
+    line: 'PrintMotd no'
+    state: present
+  notify: Restart SSH
+
+- name: Silence login banners via hushlogin
+  ansible.builtin.file:
+    path: "~{{ ansible_user | default('ec2-user') }}/.hushlogin"
+    state: touch
+    mode: '0644'
