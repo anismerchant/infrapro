@@ -48,3 +48,5 @@ This directory contains:
 * Final successful Ansible run confirmation
 
 > These artifacts are intentionally separated from the repository to keep the codebase clean while still providing full execution proof for reviewers.
+
+**Verification note:** The final Ansible run completed successfully (`failed=0`, `unreachable=0`), with a single expected change on first execution, demonstrating correct connectivity, Python compatibility, and idempotent configuration enforcement.
